@@ -55,5 +55,7 @@ _comment' | jq
 git clone https://github.com/GitHub30/ssh-keygen-laravel
 cd ssh-keygen-laravel
 composer install
+composer run-script post-root-package-install
+composer run-script post-create-project-cmd
 php artisan serve
 ```
