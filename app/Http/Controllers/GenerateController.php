@@ -15,23 +15,32 @@ class GenerateController extends Controller
      */
     public function __invoke(GenerateRequest $request)
     {
-        $f = $request->input('f', 'id_rsa');
+        $filename = Str::uuid();
         $N = $request->input('N', '');
+        $C = $request->input('C', '');
         $t = $request->input('t');
+        $b = $request->input('b');
         $optional_args = '';
         if ($t) {
             $optional_args .= " -t '$t'";
         }
+        if ($b) {
+            $optional_args .= " -b '$b'";
+        }
 
-        $relative_dir_path = 'keys' . DIRECTORY_SEPARATOR . Str::random(10);
-        $relative_file_path = $relative_dir_path . DIRECTORY_SEPARATOR . $f;
-        $directory_path = public_path($relative_dir_path);
-        File::makeDirectory($directory_path, recursive: true);
-        $file_path = public_path($relative_file_path);
-        Process::run("ssh-keygen -f '$file_path' -N '$N'$optional_args");
+        $result = Process::run("ssh-keygen -f '$filename' -N '$N' -C '$C' $optional_args");
+
+        if ($result->failed()) {
+            return $result->errorOutput();
+        }
+
+        $public_key = File::get("$filename.pub");
+        $private_key = File::get($filename);
+        File::delete("$filename.pub");
+        File::delete($filename);
         return [
-            'public_key' => ['path' => "$relative_file_path.pub", 'file' => File::get("$file_path.pub")],
-            'private_key' => ['path' => $relative_file_path, 'file' => File::get($file_path)]
+            'public_key' => $public_key,
+            'private_key' => $private_key
         ];
     }
 }

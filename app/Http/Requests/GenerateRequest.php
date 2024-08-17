@@ -24,9 +24,10 @@ class GenerateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'f' => ['alpha_num:ascii'],
-            'N' => ['alpha_num:ascii'],
-            't' => ['in:rsa,dsa,ecdsa,ed25519'],
+            'N' => 'alpha_dash:ascii',
+            'C' => 'nullable|regex:/^[\w@.-]+$/',
+            't' => 'nullable|in:rsa,dsa,ecdsa,ed25519,RSA,DSA,ECDSA,ED25519',
+            'b' => 'nullable|integer|min:1|max:4294967295',
         ];
     }
 
