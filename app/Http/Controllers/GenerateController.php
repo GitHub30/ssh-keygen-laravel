@@ -39,6 +39,7 @@ class GenerateController extends Controller
         $private_key = File::get($filename);
         File::delete("$filename.pub");
         File::delete($filename);
+
         return [
             'command' => $command,
             'public_key' => $public_key,
