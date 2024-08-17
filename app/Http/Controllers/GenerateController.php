@@ -28,7 +28,8 @@ class GenerateController extends Controller
             $optional_args .= " -b '$b'";
         }
 
-        $result = Process::run("ssh-keygen -f '$filename' -N '$N' -C '$C' $optional_args");
+        $command = "ssh-keygen -f '$filename' -N '$N' -C '$C'$optional_args";
+        $result = Process::run($command);
 
         if ($result->failed()) {
             return $result->errorOutput();
@@ -39,6 +40,7 @@ class GenerateController extends Controller
         File::delete("$filename.pub");
         File::delete($filename);
         return [
+            'command' => $command,
             'public_key' => $public_key,
             'private_key' => $private_key
         ];
